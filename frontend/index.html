@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WaterTwin AI Dashboard</title>
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #e2e8f0;
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 { color: var(--primary); text-transform: uppercase; letter-spacing: 2px; }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            border: 1px solid #334155;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .metric-label { font-size: 0.9em; color: #94a3b8; }
+
+        .ai-box {
+            grid-column: 1 / -1;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border: 1px solid var(--primary);
+            text-align: left;
+        }
+        .ai-text {
+            font-style: italic;
+            line-height: 1.6;
+            color: #fff;
+        }
+
+        button {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 30px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--primary); }
+        button:disabled { background: #555; cursor: not-allowed; }
+
+        .loader { display: none; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+    <h1>💧 WaterTwin AI v2.0</h1>
+    <p>Smart Water Management System</p>
+
+    <button onclick="refreshData()" id="refreshBtn">
+        Analyze System <span class="loader">Wait...</span>
+    </button>
+
+    <div class="dashboard" id="dashboard" style="opacity: 0.5; pointer-events: none;">
+        <div class="card">
+            <div class="metric-label">Predicted Rain (Hourly)</div>
+            <div class="metric-value" id="rainVal">--</div>
+            <div class="metric-label">mm</div>
+        </div>
+
+        <div class="card">
+            <div class="metric-label">Incoming Water</div>
+            <div class="metric-value" id="waterIn">--</div>
+            <div class="metric-label">Liters</div>
+        </div>
+
+        <div class="card">
+            <div class="metric-label">System Status</div>
+            <div class="metric-value" id="statusVal" style="font-size: 1.5em;">--</div>
+            <div class="metric-label">Based on 5000L Tank</div>
+        </div>
+
+        <div class="card ai-box">
+            <div class="metric-label" style="color: var(--primary);">🤖 AI Assistant Report</div>
+            <p class="ai-text" id="aiResponse">Waiting for analysis...</p>
+        </div>
+    </div>
+
+    <script>
+        async function refreshData() {
+            const btn = document.getElementById('refreshBtn');
+            const dash = document.getElementById('dashboard');
+            const aiText = document.getElementById('aiResponse');
+
+            // Loading State
+            btn.disabled = true;
+            btn.innerHTML = "Processing AI Models...";
+            dash.style.opacity = "0.5";
+            aiText.innerText = "Analyzing weather patterns and tank levels...";
+
+            try {
+                // Backend'e istek at (Localhost)
+                const response = await fetch('http://127.0.0.1:8000/analyze');
+                const data = await response.json();
+
+                // Verileri Yerleştir
+                document.getElementById('rainVal').innerText = data.weather.rain_forecast_mm;
+                document.getElementById('waterIn').innerText = data.tank.incoming_water;
+
+                const status = data.tank.status_code;
+                const statusEl = document.getElementById('statusVal');
+                statusEl.innerText = status;
+
+                // Renk Ayarları
+                if(status === 'CRITICAL_OVERFLOW') statusEl.style.color = '#ff4444';
+                else if(status === 'STABLE') statusEl.style.color = '#00ff88';
+                else statusEl.style.color = 'orange';
+
+                // AI Mesajı (Daktilo Efekti verebiliriz ama düz yazalım şimdilik)
+                aiText.innerText = `"${data.ai_assistant.message}"`;
+
+            } catch (error) {
+                console.error(error);
+                aiText.innerText = "Error: Could not connect to WaterTwin Backend.";
+            } finally {
+                // Reset State
+                btn.disabled = false;
+                btn.innerHTML = "Analyze System";
+                dash.style.opacity = "1";
+            }
+        }
+    </script>
+</body>
+</html>
