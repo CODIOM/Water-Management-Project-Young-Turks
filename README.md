@@ -114,22 +114,17 @@ The system acts as a real-time digital twin that models rainfall, water flow, st
 
 ```sh
 └── /
-    ├── ai_models
-    │   ├── weather_forecasting  # Predicts rainfall
-    │   ├── runoff_calculator    # Calculates water volume
-    │   └── consumption_model    # Estimates water usage
+    ├── ai_core
+    │   ├── llm_engine  # Large Language Model
+    │   ├── ml_engine    # Machine Learning Prediction
     ├── backend
     │   └── api
     ├── data
-    │   ├── historical_weather
-    │   └── system_parameters    # Roof size, tank capacity etc.
-    ├── deployment
-    │   └── docker
-    ├── docs
-    │   └── mathematical_models
-    └── frontend
-        ├── ui
-        └── charts
+    │   ├── data_processor
+    │   └── historical_hourly_data
+    ├── frontend-react
+    │   └── 
+   
 ```
 
 ### API Endpoints
