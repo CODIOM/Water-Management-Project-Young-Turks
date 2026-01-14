@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Sanal Ortam
+.venv/
+venv/
+env/
+
+# IDE Ayarları (PyCharm/VSCode)
+.idea/
+.vscode/
+
+# Veri Dosyaları (CSV'leri isteğe bağlı gönderebilirsin ama genelde büyük dosyalar gitmez)
+# Eğer CSV'lerin github'da durmasını istersen aşağıdaki satırı sil.
+# Data/*.csv
+
+# Loglar
+*.log
